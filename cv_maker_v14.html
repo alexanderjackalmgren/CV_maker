@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional CV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:wght@400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* GLOBAL RESET & VARIABLES */
+        :root {
+            --primary-accent: #1A365D;
+            --secondary-accent: #3182CE;
+            --font-main: 'Inter', sans-serif;
+            --text-sub: #4A5568;
+            --danger-red: #e53e3e;
+        }
+
+        .serif-mode { --font-main: 'Lora', serif; }
+
+        * { box-sizing: border-box; }
+        
+        body, input, button, textarea, select {
+            font-family: var(--font-main);
+        }
+
+        body { 
+            background-color: #f0f2f5; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            transition: all 0.3s ease; 
+            overflow-x: auto; 
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            position: sticky; top: 10px; z-index: 100;
+            background: #fff; padding: 15px 25px; border-radius: 12px;
+            margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex; gap: 15px; align-items: center; border: 1px solid #e2e8f0;
+        }
+        
+        .toolbar select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--primary-accent);
+            font-weight: 600;
+        }
+
+        .save-status { font-size: 11px; color: #48bb78; font-weight: 600; opacity: 0; transition: opacity 0.3s; margin-left: auto; }
+
+        /* WORKSPACE GRID */
+        .workspace { display: flex; gap: 25px; width: 100%; max-width: 2000px; align-items: flex-start; justify-content: center; }
+        .panel { flex-shrink: 0; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+        /* PANELS: LEFT & RIGHT TOOLTIPS */
+        .ux-tooltip, .letter-tooltip { width: 280px; position: sticky; top: 100px; padding: 25px; }
+        .ux-tooltip { border-left: 4px solid var(--primary-accent); }
+        .letter-tooltip { border-left: 4px solid var(--secondary-accent); }
+        .ux-tooltip h3, .letter-tooltip h3 { margin-top: 0; font-size: 13pt; color: var(--primary-accent); margin-bottom: 15px; }
+        .ux-tooltip p, .letter-tooltip p { font-size: 9pt; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px; }
+        .ux-tooltip strong, .letter-tooltip strong { color: var(--primary-accent); }
+
+        /* PANEL: PERSONAL LETTER */
+        .cover-letter {
+            width: 420px;
+            border-top: 4px solid var(--secondary-accent);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            min-height: 600px;
+        }
+        .cover-letter-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+        .cover-letter h3 { margin: 0; font-size: 14pt; color: #1a202c; }
+        .cover-letter p.hint { font-size: 8.5pt; color: var(--text-sub); margin-bottom: 20px; margin-top: 0; }
+        
+        #word-count { font-size: 9pt; font-weight: 600; color: var(--text-sub); transition: color 0.3s; }
+        .word-count-danger { color: var(--danger-red) !important; font-weight: 800 !important; }
+
+        .letter-editor { flex-grow: 1; font-size: 10.5pt; line-height: 1.6; color: #2d3748; outline: none; }
+        .letter-editor p { margin-top: 0; margin-bottom: 14px; }
+        .letter-editor ul { padding-left: 20px; margin-bottom: 14px; }
+        .letter-editor li { margin-bottom: 6px; }
+
+        /* CENTER: A4 PAGE STYLING */
+        .page { width: 210mm; min-height: 297mm; padding: 20mm; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; flex-shrink: 0; }
+
+        #easter-egg {
+            display: none; position: absolute; top: 25px; left: 0; width: 100%; text-align: center;
+            font-size: 10.5pt; color: var(--secondary-accent);
+            font-weight: 600; font-style: italic; opacity: 0; transition: opacity 0.6s ease; z-index: 10;
+        }
+
+        /* HEADER GRID */
+        header { 
+            display: grid; 
+            grid-template-columns: 140px 1fr 200px; 
+            gap: 20px; 
+            border-bottom: 3px solid var(--primary-accent); 
+            padding-bottom: 30px; 
+            margin-bottom: 30px; 
+            align-items: center; 
+            transition: all 0.3s ease; 
+        }
+        .profile-pic-container { width: 140px; height: 140px; border-radius: 50%; background: #edf2f7; border: 2px dashed #cbd5e0; overflow: hidden; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        #profile-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .name-title h1 { margin: 0; font-size: 28pt; font-weight: 700; color: var(--primary-accent); line-height: 1; outline: none; }
+        .name-title p { margin: 8px 0 0; font-size: 13pt; color: var(--secondary-accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; outline: none; }
+
+        /* NO PHOTO STATE */
+        body.no-photo header { grid-template-columns: 1fr 200px; }
+        body.no-photo .profile-pic-container { display: none !important; }
+
+        /* THE STEM GRID & DRAG CONTROLS */
+        section { 
+            display: grid; 
+            grid-template-columns: 45mm minmax(0, 1fr); 
+            margin-bottom: 28px; 
+            gap: 15mm; 
+            position: relative; 
+            transition: opacity 0.2s;
+            align-items: baseline;
+        }
+        
+        section.dragging { opacity: 0.4; border: 2px dashed #cbd5e0; border-radius: 8px; }
+
+        .section-label h2 { 
+            font-size: 10pt; font-weight: 800; text-transform: uppercase; 
+            color: var(--primary-accent); margin: 0; 
+            border-left: 4px solid var(--secondary-accent); padding-left: 10px; 
+        }
+
+        .content { min-width: 0; width: 100%; }
+
+        /* SECTION CONTROLS GROUP */
+        .section-controls {
+            position: absolute; left: -50px; top: 0; display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s ease;
+        }
+        section:hover .section-controls { opacity: 1; }
+
+        .drag-handle { cursor: grab; color: #a0aec0; font-size: 16pt; user-select: none; line-height: 1; }
+        .drag-handle:active { cursor: grabbing; color: var(--secondary-accent); }
+        .delete-section { color: #e53e3e; cursor: pointer; font-weight: bold; font-size: 16pt; user-select: none; line-height: 1; }
+        
+        .sub-item { position: relative; margin-bottom: 25px; transition: background 0.2s; padding: 5px; margin-left: -5px; border-radius: 4px;}
+        .sub-item:hover { background: #f8fafc; }
+        .delete-item { position: absolute; right: -25px; top: 0; color: #a0aec0; cursor: pointer; opacity: 0; font-weight: bold; font-size: 14pt; transition: opacity 0.2s ease; user-select: none; }
+        .sub-item:hover .delete-item { opacity: 1; color: #e53e3e; }
+
+        .add-item-btn { display: inline-block; padding: 6px 12px; margin-top: -10px; margin-bottom: 20px; font-size: 9pt; font-weight: 600; color: var(--secondary-accent); background: rgba(49, 130, 206, 0.1); border: 1px dashed var(--secondary-accent); border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; text-align: center; }
+        .add-item-btn:hover { background: rgba(49, 130, 206, 0.2); }
+
+        .metric-box { border-left: 2px solid #e2e8f0; padding-left: 15px; margin: 10px 0; }
+        .metric-value { font-size: 16pt; font-weight: 800; color: var(--secondary-accent); display: block; }
+        .metric-label { font-size: 9pt; color: var(--text-sub); text-transform: uppercase; }
+
+        .pill { background: #f1f5f9; color: var(--primary-accent); padding: 4px 10px; border-radius: 4px; font-size: 8.5pt; font-weight: 700; border-left: 2px solid var(--secondary-accent); cursor: pointer; transition: 0.2s; }
+        .pill:hover { background: #fee2e2; border-left-color: #ef4444; }
+
+        #skill-input { border: 1px solid #ddd; border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; width: 100%; font-size: 9pt; }
+
+        [contenteditable="true"]:focus { background: #f8fafc; outline: none; padding: 2px; border-radius: 2px; }
+
+        /* FLOATING FORMAT TOOLBAR */
+        #format-toolbar {
+            position: absolute;
+            background: #1a202c;
+            border-radius: 6px;
+            padding: 5px;
+            display: none;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(-50%) translateY(-55px);
+            align-items: center;
+        }
+        
+        #format-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1a202c transparent transparent transparent;
+        }
+
+        .fmt-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-family: serif;
+            font-size: 14px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fmt-btn:hover { background: #4a5568; }
+
+        .fmt-select {
+            background: #2d3748;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            height: 30px;
+        }
+        .fmt-select:hover { background: #4a5568; }
+        .fmt-divider { width: 1px; height: 20px; background: #4a5568; margin: 0 4px; }
+
+        @media print { 
+            .toolbar, .section-controls, .delete-item, .no-print, 
+            .ux-tooltip, .letter-tooltip, #easter-egg, #format-toolbar,
+            .cover-letter-header, .cover-letter p.hint { display: none !important; } 
+
+            body { padding: 0; background: white; overflow: visible; margin: 0; } 
+            .workspace { display: block; width: 100%; gap: 0; }
+            .page { box-shadow: none; margin: 0; page-break-after: always; break-after: page; } 
+            .cover-letter { display: block; width: 210mm; min-height: 297mm; padding: 20mm; margin: 0; border: none; box-shadow: none; border-radius: 0; }
+            .letter-editor { font-size: 11pt; } 
+            .sub-item { padding: 0; margin-left: 0; } 
+            .sub-item:hover { background: transparent; } 
+        }
+    </style>
+</head>
+<body>
+
+<div id="format-toolbar" class="no-print">
+    <select class="fmt-select" onchange="applyFormatArg('fontName', this.value); this.selectedIndex=0;">
+        <option value="" disabled selected>Font</option>
+        <option value="Inter">Inter</option>
+        <option value="Lora">Lora</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Playfair Display">Playfair</option>
+    </select>
+
+    <select class="fmt-select" style="width: 50px;" onchange="applyFormatArg('fontSize', this.value); this.selectedIndex=0;">
+        <option value="" disabled selected>Size</option>
+        <option value="1">XS</option>
+        <option value="2">S</option>
+        <option value="3">M</option>
+        <option value="4">L</option>
+        <option value="5">XL</option>
+        <option value="6">2XL</option>
+        <option value="7">3XL</option>
+    </select>
+
+    <div class="fmt-divider"></div>
+
+    <button class="fmt-btn" onmousedown="applyFormatSimple(event, 'bold')">B</button>
+    <button class="fmt-btn" style="font-style:italic" onmousedown="applyFormatSimple(event, 'italic')">I</button>
+    <button class="fmt-btn" style="text-decoration:underline" onmousedown="applyFormatSimple(event, 'underline')">U</button>
+</div>
+
+<div class="toolbar">
+    <select id="themeSelector" onchange="applyTheme(this.value)">
+        <option value="navy">Navy (Default)</option>
+        <option value="teal">Modern Teal</option>
+        <option value="slate">Elegant Slate</option>
+        <option value="berry">Creative Berry</option>
+    </select>
+
+    <input type="color" id="primaryColor" value="#1A365D" oninput="updateColors()" title="Primary Color">
+    <input type="color" id="secondaryColor" value="#3182CE" oninput="updateColors()" title="Accent Color">
+    <button onclick="toggleFont()" class="no-print" style="padding: 8px 12px; cursor: pointer;">Toggle Serif/Sans</button>
+    <button onclick="togglePhoto()" class="no-print" style="padding: 8px 12px; cursor: pointer;">Toggle Photo</button>
+    <button onclick="addSection()" style="padding: 8px 12px; cursor: pointer; background: var(--primary-accent); color: white; border: none; border-radius: 4px;">+ Add Section</button>
+    <button onclick="window.print()" style="padding: 8px 12px; cursor: pointer; background: #2D3748; color: white; border: none; border-radius: 4px;">PDF Export</button>
+    <span id="save-indicator" class="save-status">All changes saved locally ✓</span>
+</div>
+
+<div class="workspace">
+    <div class="panel ux-tooltip no-print">
+        <h3>Why This CV Works</h3>
+        <p><strong>1. The F-Pattern Stem:</strong> The left margin acts as an optical anchor. Recruiters scan down without getting lost.</p>
+        <p><strong>2. Z-Pattern Header:</strong> Contact info pushed right forces a horizontal scan before the vertical drop.</p>
+        <p><strong>3. Draggable Sections:</strong> Use the grip icon on the left to reorder sections. Only the grip moves the section!</p>
+        <p><strong>4. Auto-Save Active:</strong> Work saved to browser.</p>
+        <p><strong>5. Formatting:</strong> Highlight text to change Font, Size, Bold, Italic, or Underline.</p>
+    </div>
+
+    <div class="page">
+        <div id="easter-egg">Hello Louise, best wishes on the job hunt. -Alex</div>
+        
+        <div id="cv-content">
+            <header id="cv-header">
+                <div class="profile-pic-container" onclick="document.getElementById('file-input').click()">
+                    <img id="profile-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e0'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E">
+                    <input type="file" id="file-input" style="display:none" onchange="handleImage(this)">
+                </div>
+                <div class="name-title">
+                    <h1 id="user-name" contenteditable="true">JOHN DOE</h1>
+                    <p contenteditable="true">NETWORK TECHNICIAN</p>
+                </div>
+                <div class="contact" contenteditable="true" style="text-align: right; font-size: 9pt; line-height: 1.8;">
+                    <b>john.doe@email.com</b><br>
+                    +1 (555) 012-3456<br>
+                    New York, NY
+                </div>
+            </header>
+
+            <section draggable="true">
+                <div class="section-controls">
+                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                    <span class="delete-section" onclick="removeSection(this)" title="Remove Section">×</span>
+                </div>
+                <div class="section-label"><h2 contenteditable="true">Profile</h2></div>
+                <div class="content">
+                    <p style="font-size: 10pt; color: var(--text-sub); margin-top: 0; line-height: 1.6;" contenteditable="true">
+                        Dedicated Network Technician with 5+ years of experience in designing, installing, and maintaining complex network infrastructures. Proven track record of optimizing system performance and ensuring high-availability connectivity.
+                    </p>
+                </div>
+            </section>
+
+            <section draggable="true">
+                <div class="section-controls">
+                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                    <span class="delete-section" onclick="removeSection(this)" title="Remove Section">×</span>
+                </div>
+                <div class="section-label"><h2 contenteditable="true">Experience</h2></div>
+                <div class="content">
+                    <div class="sub-item">
+                        <span class="delete-item" onclick="this.parentElement.remove(); saveData();" title="Remove Item">×</span>
+                        <div style="display:flex; justify-content: space-between; font-weight:800; font-size:12pt;">
+                            <span contenteditable="true">Senior Network Support</span>
+                            <span contenteditable="true" style="font-size: 9pt; font-weight: 600; color: var(--text-sub);">2021 — PRESENT</span>
+                        </div>
+                        <div style="color: var(--secondary-accent); font-weight:600; margin-bottom: 8px; font-size: 10pt;" contenteditable="true">TechFlow Solutions</div>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="position: relative; padding-left: 15px; margin-bottom: 6px;" contenteditable="true"><span style="color: var(--secondary-accent); position: absolute; left: 0;">→</span><strong>Maintained</strong> 99.9% uptime for enterprise-grade WAN/LAN networks serving over 500 employees.</li>
+                        </ul>
+                    </div>
+
+                    <div class="sub-item">
+                        <span class="delete-item" onclick="this.parentElement.remove(); saveData();" title="Remove Item">×</span>
+                        <div style="display:flex; justify-content: space-between; font-weight:800; font-size:12pt;">
+                            <span contenteditable="true">Junior IT Specialist</span>
+                            <span contenteditable="true" style="font-size: 9pt; font-weight: 600; color: var(--text-sub);">2018 — 2021</span>
+                        </div>
+                        <div style="color: var(--secondary-accent); font-weight:600; margin-bottom: 8px; font-size: 10pt;" contenteditable="true">ConnectX Systems</div>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="position: relative; padding-left: 15px; margin-bottom: 6px;" contenteditable="true"><span style="color: var(--secondary-accent); position: absolute; left: 0;">→</span><strong>Resolved</strong> over 500+ tickets related to connectivity, VPN access, and hardware configuration annually.</li>
+                        </ul>
+                    </div>
+                    <div class="add-item-btn no-print" onclick="addSubsection(this)">+ Add Role / Item</div>
+                </div>
+            </section>
+
+            <section draggable="true">
+                <div class="section-controls">
+                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                    <span class="delete-section" onclick="removeSection(this)" title="Remove Section">×</span>
+                </div>
+                <div class="section-label"><h2 contenteditable="true">Education</h2></div>
+                <div class="content">
+                    <div class="sub-item">
+                        <span class="delete-item" onclick="this.parentElement.remove(); saveData();" title="Remove Item">×</span>
+                        <div style="display:flex; justify-content: space-between; font-weight:800; font-size:12pt;">
+                            <span contenteditable="true">B.S. Computer Science</span>
+                            <span contenteditable="true" style="font-size: 9pt; font-weight: 600; color: var(--text-sub);">2018</span>
+                        </div>
+                        <div style="color: var(--secondary-accent); font-weight:600; margin-bottom: 8px; font-size: 10pt;" contenteditable="true">University of Technology</div>
+                    </div>
+                    <div class="add-item-btn no-print" onclick="addSubsection(this)">+ Add Degree</div>
+                </div>
+            </section>
+
+            <section id="skills-section" draggable="true">
+                <div class="section-controls">
+                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                    <span class="delete-section" onclick="removeSection(this)" title="Remove Section">×</span>
+                </div>
+                <div class="section-label"><h2 contenteditable="true">Expertise</h2></div>
+                <div class="content">
+                    <input type="text" id="skill-input" class="no-print" placeholder="Add skill + Enter">
+                    <div class="pill-container" id="pill-holder" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <span class="pill" onclick="this.remove(); saveData();">Cisco</span>
+                        <span class="pill" onclick="this.remove(); saveData();">Juniper</span>
+                        <span class="pill" onclick="this.remove(); saveData();">OSPF</span>
+                        <span class="pill" onclick="this.remove(); saveData();">BGP</span>
+                        <span class="pill" onclick="this.remove(); saveData();">Wireshark</span>
+                        <span class="pill" onclick="this.remove(); saveData();">Python</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="panel cover-letter">
+        <div class="cover-letter-header">
+            <h3>Personal Letter</h3>
+            <span id="word-count">0 / 300</span>
+        </div>
+        <p class="hint">Your font styles automatically sync with your CV.</p>
+        
+        <div class="letter-editor" id="letter-editor" contenteditable="true">
+            <p><strong>Dear Hiring Manager,</strong></p>
+            <p>As a Network Technician with over 5 years of hands-on experience in high-availability environments, I am eager to bring my expertise in network optimization and troubleshooting to the team at [Company Name].</p>
+            <ul>
+                <li><strong>Designed</strong> scalable network architectures that supported 20% year-over-year growth.</li>
+                <li><strong>Diagnosed</strong> and resolved critical connectivity issues, reducing downtime by 15%.</li>
+                <li><strong>Implemented</strong> robust security protocols to protect sensitive corporate data.</li>
+            </ul>
+            <p>I have attached my CV detailing my technical certifications and project history. I look forward to discussing how my skills align with your current infrastructure goals.</p>
+            <p>Best regards,<br>John Doe</p>
+        </div>
+    </div>
+
+    <div class="panel letter-tooltip no-print">
+        <h3>The Perfect Letter</h3>
+        <p><strong>Max 300 Words:</strong> Exceeding this triggers cognitive friction. Respect the recruiter's time.</p>
+        <p><strong>1. The Hook:</strong> Start immediately with a potent metric or value proposition.</p>
+        <p><strong>2. The Saccade Path:</strong> Use 3 bullets starting with bolded action verbs to carry the F-Pattern scan over from your CV.</p>
+        <p><strong>3. The Exit Node:</strong> Close with a frictionless, confident call to action.</p>
+    </div>
+</div>
+
+<script>
+    // --- 1. THEME ENGINE ---
+    const themes = {
+        navy: { primary: "#1A365D", secondary: "#3182CE" },
+        teal: { primary: "#0f766e", secondary: "#2dd4bf" },
+        slate: { primary: "#334155", secondary: "#94a3b8" },
+        berry: { primary: "#701a75", secondary: "#d946ef" }
+    };
+
+    function applyTheme(themeName) {
+        const theme = themes[themeName];
+        if (theme) {
+            document.getElementById('primaryColor').value = theme.primary;
+            document.getElementById('secondaryColor').value = theme.secondary;
+            updateColors();
+        }
+    }
+
+    // --- 2. FORMATTING ENGINE ---
+    const toolbar = document.getElementById('format-toolbar');
+
+    document.addEventListener('mouseup', function(e) {
+        const selection = window.getSelection();
+        if (toolbar.contains(e.target)) return;
+
+        if (selection.toString().length === 0) {
+            toolbar.style.display = 'none';
+            return;
+        }
+
+        let parent = selection.anchorNode.parentElement;
+        while(parent && parent.tagName !== 'BODY') {
+            if(parent.getAttribute('contenteditable') === 'true') {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                toolbar.style.display = 'flex';
+                toolbar.style.top = (window.scrollY + rect.top - 55) + 'px';
+                toolbar.style.left = (window.scrollX + rect.left + (rect.width / 2)) + 'px';
+                return;
+            }
+            parent = parent.parentElement;
+        }
+        toolbar.style.display = 'none';
+    });
+
+    function applyFormatSimple(e, command) {
+        e.preventDefault(); 
+        document.execCommand(command, false, null);
+        saveData(); 
+    }
+
+    function applyFormatArg(command, arg) {
+        document.execCommand(command, false, arg);
+        saveData(); 
+    }
+
+    // --- 3. LOCAL STORAGE & AUTOSAVE ---
+    function showSaveStatus() {
+        const ind = document.getElementById('save-indicator');
+        ind.style.opacity = '1';
+        clearTimeout(window.saveTimeout);
+        window.saveTimeout = setTimeout(() => { ind.style.opacity = '0'; }, 2000);
+    }
+
+    function saveData() {
+        const data = {
+            cv: document.getElementById('cv-content').innerHTML,
+            letter: document.getElementById('letter-editor').innerHTML,
+            primary: document.getElementById('primaryColor').value,
+            secondary: document.getElementById('secondaryColor').value,
+            serif: document.body.classList.contains('serif-mode'),
+            noPhoto: document.body.classList.contains('no-photo'),
+            userName: document.getElementById('user-name').innerText,
+            theme: document.getElementById('themeSelector').value
+        };
+        localStorage.setItem('cvStudioData', JSON.stringify(data));
+        showSaveStatus();
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('cvStudioData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.cv) document.getElementById('cv-content').innerHTML = data.cv;
+            if (data.letter) document.getElementById('letter-editor').innerHTML = data.letter;
+            
+            document.getElementById('primaryColor').value = data.primary || '#1A365D';
+            document.getElementById('secondaryColor').value = data.secondary || '#3182CE';
+            if (data.theme) document.getElementById('themeSelector').value = data.theme;
+            
+            updateColors(false); 
+
+            if (data.serif) document.body.classList.add('serif-mode');
+            else document.body.classList.remove('serif-mode');
+
+            if (data.noPhoto) document.body.classList.add('no-photo');
+            else document.body.classList.remove('no-photo');
+
+            if (data.userName) document.title = data.userName + " - CV";
+        }
+        updateWordCount();
+        rebindSkillInput();
+        initDragAndDrop();
+    }
+
+    // --- 4. DRAG AND DROP ENGINE ---
+    function initDragAndDrop() {
+        const handles = document.querySelectorAll('.drag-handle');
+        const container = document.getElementById('cv-content');
+
+        handles.forEach(handle => {
+            handle.addEventListener('mouseenter', () => {
+                handle.closest('section').setAttribute('draggable', 'true');
+            });
+            handle.addEventListener('mouseleave', () => {
+                handle.closest('section').setAttribute('draggable', 'false');
+            });
+        });
+
+        const sections = document.querySelectorAll('section');
+        sections.forEach(sec => {
+            sec.addEventListener('dragstart', () => sec.classList.add('dragging'));
+            sec.addEventListener('dragend', () => {
+                sec.classList.remove('dragging');
+                sec.setAttribute('draggable', 'false');
+                saveData();
+            });
+        });
+
+        container.addEventListener('dragover', e => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientY);
+            const draggable = document.querySelector('.dragging');
+            if (draggable) {
+                if (afterElement == null) container.appendChild(draggable);
+                else container.insertBefore(draggable, afterElement);
+            }
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('section:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // --- 5. EASTER EGG & METADATA ---
+    let eggFired = false;
+    function checkMetadata(nameText) {
+        document.title = nameText + " - CV";
+        if (nameText.toLowerCase() === 'louise borggren') {
+            if (!eggFired) {
+                eggFired = true;
+                const egg = document.getElementById('easter-egg');
+                egg.style.display = 'block';
+                setTimeout(() => { egg.style.opacity = '1'; }, 10);
+                setTimeout(() => {
+                    egg.style.opacity = '0';
+                    setTimeout(() => { egg.style.display = 'none'; }, 600);
+                }, 10000);
+            }
+        } else {
+            eggFired = false;
+        }
+    }
+
+    // --- 6. UI CONTROLS ---
+    function updateColors(triggerSave = true) {
+        document.documentElement.style.setProperty('--primary-accent', document.getElementById('primaryColor').value);
+        document.documentElement.style.setProperty('--secondary-accent', document.getElementById('secondaryColor').value);
+        if(triggerSave) saveData();
+    }
+    
+    function toggleFont() { document.body.classList.toggle('serif-mode'); saveData(); }
+    function togglePhoto() { document.body.classList.toggle('no-photo'); saveData(); }
+    
+    function handleImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('profile-img').src = e.target.result;
+                saveData(); 
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function rebindSkillInput() {
+        const skillInput = document.getElementById('skill-input');
+        if(skillInput) {
+            skillInput.removeEventListener('keypress', handleSkillEnter); 
+            skillInput.addEventListener('keypress', handleSkillEnter);
+        }
+    }
+
+    function handleSkillEnter(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+            const span = document.createElement('span');
+            span.className = 'pill';
+            span.textContent = this.value;
+            span.onclick = function() { this.remove(); saveData(); };
+            document.getElementById('pill-holder').appendChild(span);
+            this.value = "";
+            saveData();
+        }
+    }
+
+    function removeSection(el) {
+        el.closest('section').remove();
+        saveData();
+    }
+
+    function addSection() {
+        const sec = document.createElement('section');
+        sec.innerHTML = `
+            <div class="section-controls">
+                <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                <span class="delete-section" onclick="removeSection(this)" title="Remove Section">×</span>
+            </div>
+            <div class="section-label"><h2 contenteditable="true">New Section</h2></div>
+            <div class="content">
+                <div class="sub-item">
+                    <span class="delete-item" onclick="this.parentElement.remove(); saveData();" title="Remove Item">×</span>
+                    <div style="display:flex; justify-content: space-between; font-weight:800; font-size:12pt;">
+                        <span contenteditable="true">Role / Title</span>
+                        <span contenteditable="true" style="font-size: 9pt; font-weight: 600; color: var(--text-sub);">Year — Year</span>
+                    </div>
+                    <div style="color: var(--secondary-accent); font-weight:600; margin-bottom: 8px; font-size: 10pt;" contenteditable="true">Company / Organization</div>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="position: relative; padding-left: 15px; margin-bottom: 6px;" contenteditable="true"><span style="color: var(--secondary-accent); position: absolute; left: 0;">→</span><strong>Action</strong> result and metric.</li>
+                    </ul>
+                </div>
+                <div class="add-item-btn no-print" onclick="addSubsection(this)">+ Add Item</div>
+            </div>
+        `;
+        document.getElementById('cv-content').appendChild(sec);
+        initDragAndDrop();
+        saveData();
+    }
+
+    function addSubsection(btnElement) {
+        const newItem = document.createElement('div');
+        newItem.className = 'sub-item';
+        newItem.innerHTML = `
+            <span class="delete-item" onclick="this.parentElement.remove(); saveData();" title="Remove Item">×</span>
+            <div style="display:flex; justify-content: space-between; font-weight:800; font-size:12pt;">
+                <span contenteditable="true">New Role / Title</span>
+                <span contenteditable="true" style="font-size: 9pt; font-weight: 600; color: var(--text-sub);">Year — Year</span>
+            </div>
+            <div style="color: var(--secondary-accent); font-weight:600; margin-bottom: 8px; font-size: 10pt;" contenteditable="true">Company / Organization</div>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="position: relative; padding-left: 15px; margin-bottom: 6px;" contenteditable="true"><span style="color: var(--secondary-accent); position: absolute; left: 0;">→</span><strong>Action</strong> result and metric.</li>
+            </ul>
+        `;
+        btnElement.parentNode.insertBefore(newItem, btnElement);
+        saveData();
+    }
+
+    const letterEditor = document.getElementById('letter-editor');
+    const wordCountDisplay = document.getElementById('word-count');
+
+    function updateWordCount() {
+        const text = letterEditor.innerText.trim();
+        const wordCount = text === "" ? 0 : text.split(/\s+/).length;
+        wordCountDisplay.innerText = wordCount + " / 300 words";
+        if (wordCount > 300) wordCountDisplay.classList.add('word-count-danger');
+        else wordCountDisplay.classList.remove('word-count-danger');
+    }
+
+    document.addEventListener('input', (e) => {
+        if (e.target.id === 'user-name') checkMetadata(e.target.innerText.trim()); 
+        if (document.getElementById('letter-editor').contains(e.target)) updateWordCount();
+        saveData();
+    });
+
+    window.onload = loadData;
+</script>
+</body>
+</html>
